@@ -1,0 +1,7 @@
+<suite name="Swag Lab Automation Testing">
+	<test name="ChromeTest">
+	<classes>
+	 <class name="TestRunner" /> 	 
+	</classes>
+	</test>
+</suite>
