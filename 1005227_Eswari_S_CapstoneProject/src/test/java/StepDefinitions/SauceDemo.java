@@ -7,42 +7,50 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.edge.EdgeDriver;
 
+import com.capstone.objectutility.AddToCart;
+import com.capstone.objectutility.CheckOut;
+
+import com.capstone.objectutility.HomePage;
+import com.capstone.objectutility.LoginPage;
+
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
-public class SauceDemo {
+public class SauceDemo{
 	
-		public static WebDriver driver;
+		WebDriver driver = new EdgeDriver();
+		LoginPage lp = new LoginPage(driver);
+		HomePage hp = new HomePage(driver);
+		AddToCart ac = new AddToCart(driver);
+		CheckOut chk = new CheckOut(driver);
 			
 		@Given ("user is on login page")
 		public void launch() {
-			driver = new EdgeDriver();
-					
+										
 			driver.manage().window().maximize();
 			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 			driver.get("https://www.saucedemo.com/v1/");
-			//System.out.println("Application launched successfully");
+			System.out.println("Application launched successfully");
+			
 		}
 			
 		@When ("user enters username and password")	
 		public void EnterCreds() {
 			
 			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-			WebElement username = driver.findElement(By.id("user-name"));
-			username.sendKeys("standard_user");
-			WebElement password = driver.findElement(By.id("password"));
-			password.sendKeys("secret_sauce");
+			lp.getUsername().sendKeys("standard_user");
+			lp.getPassword().sendKeys("secret_sauce");
 			System.out.println("User entered username and password");
+			
 		}
 			
 		@And ("user click on login button")
 		public void clicks_on_login_button() {
 			
 			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-			WebElement LoginBtn = driver.findElement(By.id("login-button"));
-			LoginBtn.click();
+			lp.getLoginBtn().click();
 			System.out.println("User clicked on Login button successfully");
 			
 			
@@ -56,23 +64,24 @@ public class SauceDemo {
 		
 		@Given("user click on Add to cart for products")
 		public void user_click_on_Add_to_cart_for_products() throws InterruptedException {
-			WebElement prod1 = driver.findElement(By.xpath("(//button[@class='btn_primary btn_inventory'])[1]"));
-			prod1.click();
+			
+			driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+			hp.getProd1().click();			
 			Thread.sleep(2000);
 			
-			WebElement prod2 = driver.findElement(By.xpath("(//button[@class='btn_primary btn_inventory'])[2]"));
-			prod2.click();
+			hp.getProd2().click();
 			Thread.sleep(2000);
 			
-			WebElement prod3 = driver.findElement(By.xpath("(//button[@class='btn_primary btn_inventory'])[3]"));
-			prod3.click();
+			hp.getProd3().click();
 			Thread.sleep(2000);
+			
+			System.out.println("Product added to the cart");
+			
 		}
 			
 			@And("user clicks on cart button")
 			public void user_clicks_on_cart_button() throws InterruptedException {
-				WebElement AddToCartBtn = driver.findElement(By.xpath("//*[name()='svg']"));
-				AddToCartBtn.click();
+				ac.getAddToCartBtn().click();				
 				Thread.sleep(2000);
 			}	
 				
@@ -83,48 +92,44 @@ public class SauceDemo {
 				System.out.println("Product 3" + driver.getPageSource().contains("Sauce Labs Onesie"));
 				Thread.sleep(2000);
 			
-			
 		}
 			
 			@Given("user clicks on checkout button")
 			public void user_clicks_on_checkout_button() throws InterruptedException {
-				//WebElement CheckOut = driver.findElement(By.partialLinkText("//a[contains(@href, 'checkout')]"));
-				WebElement CheckOut = driver.findElement(By.xpath("//*[@id=\"cart_contents_container\"]/div/div[2]/a[2]"));
-				
-				CheckOut.click();
+				ac.getCheckOut().click();
 				Thread.sleep(2000);
 			}
 				
+			
 			@Then("user enters firstname, lastname and zip code")
 			public void user_checks_the_information() throws InterruptedException {
-				WebElement firstName = driver.findElement(By.id("first-name"));
-				firstName.sendKeys("Eswari");
+				chk.getFirstName().sendKeys("Eswari");
 				Thread.sleep(2000);
 				
-				WebElement lastName = driver.findElement(By.id("last-name"));
-				lastName.sendKeys("S");
+				chk.getLastName().sendKeys("S");
 				Thread.sleep(2000);
-				
-				WebElement PostalCode = driver.findElement(By.id("postal-code"));
-				PostalCode.sendKeys("560078");
+			
+				chk.getPostalCode().sendKeys("560078");
 				Thread.sleep(2000);
 			}
 			
 			@And("user clicks on continue and finish button")
-			public void user_clicks_on_continue_finish_button() throws InterruptedException {
-				WebElement continueBtn = driver.findElement(By.xpath("//input[@value='CONTINUE']"));
-				continueBtn.click();
+			public void user_clicks_on_continue_finish_button() throws InterruptedException{
+				
+				chk.getContinueBtn().click();
 				Thread.sleep(2000);
 				
-				WebElement finishBtn = driver.findElement(By.partialLinkText("FINISH"));
-				finishBtn.click();
+				chk.getFinishBtn().click();
 				Thread.sleep(2000);
 			}
 			
 			@Then("user can see the message Thank you for your order")
 			public void user_can_see_the_message_thank_you_for_your_order() throws InterruptedException {
-				System.out.println("Order placed successfully? "+ driver.getPageSource().contains("Thank you for your order!"));
-				Thread.sleep(2000);
+				System.out.println(driver.getPageSource().contains("Thank you for your order!"));
+				System.out.println(driver.getPageSource().contains("Your order has been dispatched, and will arrive just as fast as the pony can get there!"));
+				Thread.sleep(5000);
+				
+				driver.quit();
 			}
 				
 			}
